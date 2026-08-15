@@ -1,0 +1,12 @@
+[package]
+name = "poker-core"
+description = "Foundation types for poker: cards, deck, game state, betting, rules"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+rand = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }

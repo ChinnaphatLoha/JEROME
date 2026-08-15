@@ -1,0 +1,22 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/poker-core",
+    "crates/poker-analysis",
+    "crates/poker-probability",
+    "crates/poker-decision",
+    "crates/poker-strategy",
+    "crates/poker-simulation",
+    "crates/poker-engine",
+]
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+license = "MIT"
+
+[workspace.dependencies]
+rand = "0.8"
+criterion = { version = "0.4", features = ["html_reports"] }
+proptest = "1.2"
+
