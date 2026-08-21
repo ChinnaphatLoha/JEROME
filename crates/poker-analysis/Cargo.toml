@@ -1,0 +1,12 @@
+[package]
+name = "poker-analysis"
+description = "Hand evaluation, board texture, range modeling, blockers, opponent modeling"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+poker-core = { path = "../poker-core" }
+
+[dev-dependencies]
+proptest = { workspace = true }
