@@ -1,0 +1,14 @@
+[package]
+name = "poker-probability"
+description = "Equity calculation (exact + Monte Carlo), pot odds, outs, implied odds"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+poker-core = { path = "../poker-core" }
+poker-analysis = { path = "../poker-analysis" }
+rand = { workspace = true, features = ["small_rng"] }
+
+[dev-dependencies]
+proptest = { workspace = true }
