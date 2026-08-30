@@ -1,0 +1,11 @@
+[package]
+name = "poker-decision"
+description = "Action generation, EV calculation, decision pipeline, explanations"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+poker-core = { path = "../poker-core" }
+poker-analysis = { path = "../poker-analysis" }
+poker-probability = { path = "../poker-probability" }
