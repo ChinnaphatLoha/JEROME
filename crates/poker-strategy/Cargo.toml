@@ -1,0 +1,11 @@
+[package]
+name = "poker-strategy"
+description = "Strategy layer: value betting, bluffing, exploitative, GTO heuristics"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+poker-core = { path = "../poker-core" }
+poker-analysis = { path = "../poker-analysis" }
+poker-probability = { path = "../poker-probability" }
