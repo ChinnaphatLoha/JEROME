@@ -1,0 +1,22 @@
+[package]
+name = "poker-engine"
+description = "Unified facade: PokerEngine::analyze(GameState) → DecisionResult"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+poker-core = { path = "../poker-core" }
+poker-analysis = { path = "../poker-analysis" }
+poker-probability = { path = "../poker-probability" }
+poker-decision = { path = "../poker-decision" }
+poker-strategy = { path = "../poker-strategy" }
+poker-simulation = { path = "../poker-simulation" }
+
+[dev-dependencies]
+criterion.workspace = true
+
+[[bench]]
+name = "poker_benchmarks"
+harness = false
+path = "../../benches/poker_benchmarks.rs"
