@@ -138,8 +138,8 @@ graph TD
 
 ```bash
 # Clone and build
-git clone https://github.com/your-username/poker-engine.git
-cd poker-engine
+git clone https://github.com/your-username/JEROME.git
+cd JEROME
 
 cargo build --workspace
 cargo test --workspace
@@ -149,7 +149,7 @@ cargo test --workspace
 
 ```toml
 [dependencies]
-poker-engine = { path = "path/to/poker-engine/crates/poker-engine" }
+poker-engine = { path = "path/to/JEROME/crates/poker-engine" }
 ```
 
 ### Usage Example
@@ -383,7 +383,7 @@ cargo bench --workspace
 ## Project Structure
 
 ```text
-poker-engine/
+JEROME/
 ├── Cargo.toml                 # Workspace manifest
 ├── README.md
 ├── LICENSE
