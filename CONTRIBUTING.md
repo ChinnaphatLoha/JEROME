@@ -1,6 +1,6 @@
-# Contributing to poker-engine
+# Contributing to JEROME
 
-Thank you for your interest in contributing to `poker-engine`! This document outlines our development workflow, code standards, and submission guidelines.
+Thank you for your interest in contributing to JEROME! This document outlines our development workflow, code standards, and submission guidelines.
 
 ---
 

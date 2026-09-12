@@ -1,6 +1,8 @@
 <div align="center">
 
-# ♠️ Poker Decision Engine
+# ♠️ JEROME
+
+**Judgement Engine for Range, Odds, Moves & Equity**
 
 **A high-performance, deterministic No-Limit Texas Hold'em decision engine built in Rust.**
 
