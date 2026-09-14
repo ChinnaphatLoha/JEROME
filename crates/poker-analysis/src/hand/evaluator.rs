@@ -1,9 +1,42 @@
 use super::hand_rank::{HandCategory, HandRank};
 use poker_core::card::Card;
 use poker_core::error::PokerError;
+use crate::hand::lookup::{PRIMES, TABLES};
+use std::cmp::max;
 
-/// Evaluates a collection of 5 to 7 cards and returns the best 5-card poker hand.
+/// Evaluates a collection of 5 to 7 cards and returns the best 5-card poker hand using lookup tables.
 pub fn evaluate(cards: &[Card]) -> Result<HandRank, PokerError> {
+    let n = cards.len();
+    if n < 5 || n > 7 {
+        return Err(PokerError::InsufficientCards {
+            needed: 5,
+            available: n,
+        });
+    }
+
+    let mut suit_masks = [0u16; 4];
+    let mut prime_prod = 1;
+
+    for card in cards {
+        suit_masks[card.suit().index() as usize] |= 1 << card.rank().index();
+        prime_prod *= PRIMES[card.rank().index() as usize];
+    }
+
+    let mut flush_val = 0;
+    for &mask in &suit_masks {
+        if mask.count_ones() >= 5 {
+            flush_val = TABLES.flush[mask as usize];
+            break;
+        }
+    }
+
+    let max_val = crate::hand::lookup::eval_non_flush(prime_prod, n);
+
+    Ok(HandRank::from_value(max(flush_val, max_val)))
+}
+
+/// The naive evaluator used to initialize the lookup tables.
+pub fn evaluate_naive(cards: &[Card]) -> Result<HandRank, PokerError> {
     if cards.len() < 5 {
         return Err(PokerError::InsufficientCards {
             needed: 5,

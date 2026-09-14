@@ -1,6 +1,7 @@
 pub mod draw;
 pub mod evaluator;
 pub mod hand_rank;
+pub mod lookup;
 
 pub use draw::{analyze_draws, DrawInfo};
 pub use evaluator::evaluate;

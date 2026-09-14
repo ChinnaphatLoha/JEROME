@@ -32,6 +32,10 @@ impl HandRank {
         Self(val)
     }
 
+    pub const fn from_value(value: u32) -> Self {
+        Self(value)
+    }
+
     pub fn category(&self) -> HandCategory {
         let cat_val = (self.0 >> 20) as u8;
         match cat_val {

@@ -431,6 +431,7 @@ dependencies = [
 name = "poker-analysis"
 version = "0.1.0"
 dependencies = [
+ "once_cell",
  "poker-core",
  "proptest",
 ]
