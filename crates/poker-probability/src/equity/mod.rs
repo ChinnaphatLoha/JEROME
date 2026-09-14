@@ -1,10 +1,12 @@
 pub mod config;
 pub mod exact;
 pub mod monte_carlo;
+pub mod multiway;
 
 pub use config::EquityConfig;
 pub use exact::calculate_exact_equity;
 pub use monte_carlo::calculate_mc_equity;
+pub use multiway::{calculate_multiway_equity, MultiWayEquityResult};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct EquityResult {
