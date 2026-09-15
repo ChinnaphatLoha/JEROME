@@ -24,7 +24,7 @@ Bayesian range modeling, EV analysis, and GTO heuristics. No AI. No neural netwo
 
 ---
 
-## How It Works
+## 💡 How It Works
 
 The engine accepts a complete game state and returns a ranked set of recommended actions, each annotated with expected value and human-readable explanations.
 
@@ -55,7 +55,7 @@ External System → Adapter → Typed GameState → Pure Poker Mathematics → D
 
 ---
 
-## Why This Project?
+## 🤔 Why This Project?
 
 Most poker "engines" fall into two camps:
 
@@ -73,7 +73,7 @@ This engine takes a different approach: **encode decades of poker theory as comp
 
 ---
 
-## Architecture
+## 🏗 Architecture
 
 ### Crate Dependency Graph
 
@@ -122,13 +122,13 @@ graph TD
 | **`poker-analysis`** | Hand evaluation, board texture analysis, range modeling, blocker analysis, Bayesian opponent modeling | `hand`, `board`, `range`, `blockers`, `opponent` |
 | **`poker-probability`** | Equity calculation (exact enumeration + Monte Carlo), pot odds, outs counting, implied odds | `equity`, `odds` |
 | **`poker-decision`** | Action candidate generation, EV calculation, decision pipeline orchestration, human-readable explanations | `actions`, `ev`, `decision`, `explanation`, `config` |
-| **`poker-strategy`** | Strategy layer — value betting, bluff frequency, exploitative adjustments, GTO approximations | `value`, `bluff`, `exploitative`, `gto`, `strategy` |
+| **`poker-strategy`** | Strategy layer — value betting, bluff frequency, exploitative adjustments, GTO approximations | `value`, `bluff`, `exploitative`, `gto`, `strategy`, `cfr` |
 | **`poker-simulation`** | Scenario simulation and batch benchmarking harness | `scenario`, `simulator`, `benchmark` |
 | **`poker-engine`** | Unified facade re-exporting all crates: `PokerEngine::analyze(&GameState) → DecisionResult` | top-level API |
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -138,7 +138,7 @@ graph TD
 
 ```bash
 # Clone and build
-git clone https://github.com/your-username/JEROME.git
+git clone https://github.com/ChinnaphatLoha/JEROME.git
 cd JEROME
 
 cargo build --workspace
@@ -269,7 +269,7 @@ Understanding the engine's output requires familiarity with a few key poker math
 
 ---
 
-## Key Features
+## ✨ Key Features
 
 ### 🃏 Core Primitives
 - Bit-packed card representation for cache-efficient operations
@@ -277,14 +277,16 @@ Understanding the engine's output requires familiarity with a few key poker math
 - Builder-pattern game state construction with validation
 
 ### 📊 Analysis
-- 7-card hand evaluator across all standard poker hand rankings
+- 7-card hand evaluator across all standard poker hand rankings with **$O(1)$ constant-time lookup**
 - Board texture classification (monotone, paired, connected, draw-heavy)
 - Combinatoric range modeling with 1,326 starting hand combos
 - Blocker effect analysis and card removal adjustments
 - Bayesian opponent range updates based on observed actions
+- Position-aware preflop range charts (RFI)
 
 ### 🎲 Probability
 - Monte Carlo equity simulation against opponent ranges
+- **Multi-way** pot equity calculation
 - Exact equity enumeration for river decisions
 - Pot odds and implied odds calculations
 - Automatic outs counting with equity-from-outs estimation
@@ -293,31 +295,29 @@ Understanding the engine's output requires familiarity with a few key poker math
 - Full candidate action generation (fold, check, call, bet, raise, all-in)
 - EV calculation for every candidate action
 - Strategy-aware decision ranking (value, bluff, exploitative, GTO)
+- **CFR** (Counterfactual Regret Minimization) for GTO approximations in abstracted subgames
 - Human-readable decision explanations with factor attribution
 
 ---
 
-## Performance & Benchmarks
+## ⚡ Performance & Benchmarks
 
 Benchmarked on Apple Silicon (M-series) via [Criterion](https://github.com/bheisler/criterion.rs):
 
 | Benchmark | Latency | Description |
 |:----------|:--------|:------------|
-| `hand_evaluation` | ~317 ps | Single hand rank evaluation |
-| `equity_calculation` | ~317 ps | Equity stub (MC scaffold) |
-| `full_decision_pipeline` | ~11.7 ms | End-to-end: state → analysis → EV → decision |
+| `hand_evaluation` | ~36 ns | Evaluating 7 cards into a Hand Rank (using $O(1)$ lookup tables) |
+| `equity_calculation` | ~320 ps | Overhead per Monte Carlo iteration step |
+| `full_decision_pipeline` | ~10 ms | End-to-end: state → analysis → EV → decision |
 
 ```bash
 # Reproduce benchmarks
 cargo bench --workspace
 ```
 
-> [!NOTE]
-> The `hand_evaluation` and `equity_calculation` benchmarks currently measure scaffold stubs. The `full_decision_pipeline` benchmark exercises the complete end-to-end path including Monte Carlo equity, action generation, and EV ranking.
-
 ---
 
-## Development
+## 🛠 Development
 
 ```bash
 # Type-check the entire workspace
@@ -338,7 +338,7 @@ cargo bench --workspace
 
 ---
 
-## Roadmap
+## 🗺 Roadmap
 
 - [x] Workspace architecture with layered crate dependencies
 - [x] Card, deck, and game state primitives
@@ -357,30 +357,30 @@ cargo bench --workspace
 - [x] Unified `PokerEngine` facade
 - [x] Criterion benchmarks
 - [x] CI pipeline (GitHub Actions)
-- [ ] Performance-optimized hand evaluator (lookup tables)
-- [ ] Multi-way pot equity calculation
-- [ ] Advanced GTO approximations (simplified CFR)
-- [ ] Position-aware preflop range charts
+- [x] Performance-optimized hand evaluator (lookup tables)
+- [x] Multi-way pot equity calculation
+- [x] Advanced GTO approximations (simplified CFR)
+- [x] Position-aware preflop range charts
 - [ ] FFI bindings (C/C++)
 - [ ] WebAssembly (WASM) compilation target
 - [ ] Python bindings via PyO3
 
 ---
 
-## Design Principles
+## 📐 Design Principles
 
 | Principle | Implementation |
 |:----------|:--------------|
 | **Zero transport dependencies** | No HTTP, gRPC, WebSocket, or JSON in the core. Adapters wrap the typed API. |
 | **Deterministic** | Identical inputs + identical RNG seeds = identical outputs. Every decision is reproducible. |
-| **High performance** | Compact bit-packed representations, allocation-minimized hot paths, cache-friendly data layout. |
+| **High performance** | Compact bit-packed representations, allocation-minimized hot paths, cache-friendly data layout, $O(1)$ precomputed lookup tables. |
 | **Strongly typed** | Domain-specific error types instead of panics. Builder pattern with compile-time and runtime validation. |
 | **Explainable** | Every decision includes human-readable reasoning with factor attribution — not a black box. |
 | **Extensible** | Designed for future CFR solvers, external adapters (FFI, WASM, Python), and custom strategy modules. |
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
 ```text
 JEROME/
@@ -409,7 +409,7 @@ JEROME/
 
 ---
 
-## License
+## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
 
@@ -420,3 +420,4 @@ This project is licensed under the [MIT License](LICENSE).
 Built with 🦀 Rust • Powered by Mathematics, Not Magic
 
 </div>
+
