@@ -24,7 +24,7 @@ Bayesian range modeling, EV analysis, and GTO heuristics. No AI. No neural netwo
 
 ---
 
-## 💡 How It Works
+## How It Works
 
 The engine accepts a complete game state and returns a ranked set of recommended actions, each annotated with expected value and human-readable explanations.
 
@@ -55,7 +55,7 @@ External System → Adapter → Typed GameState → Pure Poker Mathematics → D
 
 ---
 
-## 🤔 Why This Project?
+## Why This Project?
 
 Most poker "engines" fall into two camps:
 
@@ -66,14 +66,14 @@ This engine takes a different approach: **encode decades of poker theory as comp
 
 ### Non-Goals
 
-- ❌ AI/ML inference or neural network evaluation
-- ❌ Real-money gambling integration or online poker bots
-- ❌ Transport layer (HTTP, WebSocket, gRPC) — that's the adapter's job
-- ❌ GUI or visual interface — this is a computational core
+- AI/ML inference or neural network evaluation
+- Real-money gambling integration or online poker bots
+- Transport layer (HTTP, WebSocket, gRPC) — that's the adapter's job
+- GUI or visual interface — this is a computational core
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 ### Crate Dependency Graph
 
@@ -128,7 +128,7 @@ graph TD
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -217,7 +217,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ---
 
 <details>
-<summary><b>♠️ Poker Concepts Primer</b> — click to expand if you're new to poker theory</summary>
+<summary><b>Poker Concepts Primer</b> — click to expand if you're new to poker theory</summary>
 
 ### Core Concepts
 
@@ -269,14 +269,14 @@ Understanding the engine's output requires familiarity with a few key poker math
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🃏 Core Primitives
+### Core Primitives
 - Bit-packed card representation for cache-efficient operations
 - Full 52-card deck with Fisher-Yates shuffle
 - Builder-pattern game state construction with validation
 
-### 📊 Analysis
+### Analysis
 - 7-card hand evaluator across all standard poker hand rankings with **$O(1)$ constant-time lookup**
 - Board texture classification (monotone, paired, connected, draw-heavy)
 - Combinatoric range modeling with 1,326 starting hand combos
@@ -284,14 +284,14 @@ Understanding the engine's output requires familiarity with a few key poker math
 - Bayesian opponent range updates based on observed actions
 - Position-aware preflop range charts (RFI)
 
-### 🎲 Probability
+### Probability
 - Monte Carlo equity simulation against opponent ranges
 - **Multi-way** pot equity calculation
 - Exact equity enumeration for river decisions
 - Pot odds and implied odds calculations
 - Automatic outs counting with equity-from-outs estimation
 
-### 🧠 Decision Engine
+### Decision Engine
 - Full candidate action generation (fold, check, call, bet, raise, all-in)
 - EV calculation for every candidate action
 - Strategy-aware decision ranking (value, bluff, exploitative, GTO)
@@ -300,7 +300,7 @@ Understanding the engine's output requires familiarity with a few key poker math
 
 ---
 
-## ⚡ Performance & Benchmarks
+## Performance & Benchmarks
 
 Benchmarked on Apple Silicon (M-series) via [Criterion](https://github.com/bheisler/criterion.rs):
 
@@ -317,7 +317,7 @@ cargo bench --workspace
 
 ---
 
-## 🛠 Development
+## Development
 
 ```bash
 # Type-check the entire workspace
@@ -338,7 +338,7 @@ cargo bench --workspace
 
 ---
 
-## 🗺 Roadmap
+## Roadmap
 
 - [x] Workspace architecture with layered crate dependencies
 - [x] Card, deck, and game state primitives
@@ -367,7 +367,7 @@ cargo bench --workspace
 
 ---
 
-## 📐 Design Principles
+## Design Principles
 
 | Principle | Implementation |
 |:----------|:--------------|
@@ -380,7 +380,7 @@ cargo bench --workspace
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 JEROME/
@@ -409,7 +409,7 @@ JEROME/
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).
 
