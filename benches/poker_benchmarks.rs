@@ -16,10 +16,18 @@ fn create_valid_player(id: u8, position: Position) -> Player {
 }
 
 fn bench_hand_evaluation(c: &mut Criterion) {
+    let cards = [
+        Card::new(Rank::Ace, Suit::Spades),
+        Card::new(Rank::King, Suit::Spades),
+        Card::new(Rank::Queen, Suit::Spades),
+        Card::new(Rank::Jack, Suit::Spades),
+        Card::new(Rank::Ten, Suit::Spades),
+        Card::new(Rank::Two, Suit::Hearts),
+        Card::new(Rank::Three, Suit::Diamonds),
+    ];
     c.bench_function("hand_evaluation", |b| {
         b.iter(|| {
-            // Dummy for hand eval
-            black_box(1);
+            black_box(poker_analysis::hand::evaluator::evaluate(black_box(&cards)).unwrap());
         })
     });
 }
