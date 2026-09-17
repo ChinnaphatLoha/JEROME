@@ -12,7 +12,7 @@ Bayesian range modeling, EV analysis, and GTO heuristics. No AI. No neural netwo
 [![Rust](https://img.shields.io/badge/Rust-2021_Edition-f74c00?style=flat-square&logo=rust)](https://www.rust-lang.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen?style=flat-square&logo=github-actions&logoColor=white)](.github/workflows/ci.yml)
-[![Crates](https://img.shields.io/badge/Workspace-7_crates-8B5CF6?style=flat-square)]()
+[![Crates](https://img.shields.io/badge/Workspace-8_crates-8B5CF6?style=flat-square)]()
 
 [Architecture](#architecture) •
 [Quick Start](#quick-start) •
@@ -214,6 +214,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
+### WebAssembly (JavaScript/TypeScript)
+
+JEROME can be compiled to WASM and used directly in the browser or Node.js without any network overhead:
+
+```javascript
+import init, { analyze } from "poker-wasm";
+
+await init();
+
+const result = analyze({
+  hero_cards: ["As", "Kh"],
+  board: ["Qs", "Th", "5d"],
+  street: "flop",
+  pot: 120,
+  current_bet: 40,
+  big_blind: 2,
+  min_raise: 40,
+  hero_index: 0,
+  players: [
+    { id: 0, position: "BTN", stack: 980, status: "active", bet_this_round: 0 },
+    { id: 1, position: "BB", stack: 960, status: "active", bet_this_round: 40 }
+  ]
+});
+
+console.log(result.recommended_action); // { type: "Call" }
+console.log(result.estimated_equity);   // 0.42
+```
+
 ---
 
 <details>
@@ -362,7 +390,7 @@ cargo bench --workspace
 - [x] Advanced GTO approximations (simplified CFR)
 - [x] Position-aware preflop range charts
 - [ ] FFI bindings (C/C++)
-- [ ] WebAssembly (WASM) compilation target
+- [x] WebAssembly (WASM) compilation target
 - [ ] Python bindings via PyO3
 
 ---
@@ -404,7 +432,8 @@ JEROME/
     ├── poker-decision/        # Decision pipeline
     ├── poker-strategy/        # Strategy layer
     ├── poker-simulation/      # Simulation harness
-    └── poker-engine/          # Unified facade
+    ├── poker-engine/          # Unified facade
+    └── poker-wasm/            # WebAssembly adapter
 ```
 
 ---

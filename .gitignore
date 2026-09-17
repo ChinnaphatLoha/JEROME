@@ -19,3 +19,6 @@ tarpaulin-report.html
 
 # Benchmark artifacts
 criterion/
+
+# WASM output
+pkg/
