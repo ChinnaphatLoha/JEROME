@@ -1,6 +1,7 @@
 pub mod builder;
 pub mod combo;
 pub mod preflop;
+#[allow(clippy::module_inception)]
 pub mod range;
 
 pub use builder::RangeBuilder;

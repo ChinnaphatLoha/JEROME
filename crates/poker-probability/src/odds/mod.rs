@@ -1,6 +1,6 @@
-pub mod pot_odds;
-pub mod outs;
 pub mod implied_odds;
-pub use pot_odds::PotOddsCalculator;
-pub use outs::OutsCalculator;
+pub mod outs;
+pub mod pot_odds;
 pub use implied_odds::ImpliedOddsCalculator;
+pub use outs::OutsCalculator;
+pub use pot_odds::PotOddsCalculator;

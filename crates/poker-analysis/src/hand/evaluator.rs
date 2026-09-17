@@ -1,13 +1,13 @@
 use super::hand_rank::{HandCategory, HandRank};
+use crate::hand::lookup::{PRIMES, TABLES};
 use poker_core::card::Card;
 use poker_core::error::PokerError;
-use crate::hand::lookup::{PRIMES, TABLES};
 use std::cmp::max;
 
 /// Evaluates a collection of 5 to 7 cards and returns the best 5-card poker hand using lookup tables.
 pub fn evaluate(cards: &[Card]) -> Result<HandRank, PokerError> {
     let n = cards.len();
-    if n < 5 || n > 7 {
+    if !(5..=7).contains(&n) {
         return Err(PokerError::InsufficientCards {
             needed: 5,
             available: n,
@@ -148,10 +148,8 @@ pub fn evaluate_naive(cards: &[Card]) -> Result<HandRank, PokerError> {
             } else if pair_rank.is_none() {
                 pair_rank = Some(r as u8);
             }
-        } else if ranks[r] >= 2 {
-            if pair_rank.is_none() {
-                pair_rank = Some(r as u8);
-            }
+        } else if ranks[r] >= 2 && pair_rank.is_none() {
+            pair_rank = Some(r as u8);
         }
     }
     if let (Some(t), Some(p)) = (trips_rank, pair_rank) {

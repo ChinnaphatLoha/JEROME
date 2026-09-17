@@ -19,7 +19,7 @@ pub fn analyze_draws(hero_cards: [Card; 2], board: &[Card]) -> DrawInfo {
         suits[card.suit().index() as usize] += 1;
     }
 
-    let is_flush_draw = suits.iter().any(|&count| count == 4);
+    let is_flush_draw = suits.contains(&4);
 
     // Simplistic nut flush draw check:
     // It's a NFD if we have the Ace of the flush suit in our hand.
@@ -27,13 +27,12 @@ pub fn analyze_draws(hero_cards: [Card; 2], board: &[Card]) -> DrawInfo {
     let mut is_nut_flush_draw = false;
     if is_flush_draw {
         for (s_idx, &count) in suits.iter().enumerate() {
-            if count == 4 {
-                if hero_cards
+            if count == 4
+                && hero_cards
                     .iter()
                     .any(|c| c.suit().index() as usize == s_idx && c.rank().index() == 12)
-                {
-                    is_nut_flush_draw = true;
-                }
+            {
+                is_nut_flush_draw = true;
             }
         }
     }
@@ -52,8 +51,8 @@ pub fn analyze_draws(hero_cards: [Card; 2], board: &[Card]) -> DrawInfo {
     if ranks[12] > 0 {
         wheel_count += 1;
     }
-    for i in 0..4 {
-        if ranks[i] > 0 {
+    for &r in &ranks[..4] {
+        if r > 0 {
             wheel_count += 1;
         }
     }
@@ -78,9 +77,8 @@ pub fn analyze_draws(hero_cards: [Card; 2], board: &[Card]) -> DrawInfo {
 
     for start in 0..=8 {
         let mut count = 0;
-        let end = start + 5;
-        for i in start..end {
-            if ranks[i] > 0 {
+        for &r in &ranks[start..start + 5] {
+            if r > 0 {
                 count += 1;
             }
         }
@@ -88,8 +86,8 @@ pub fn analyze_draws(hero_cards: [Card; 2], board: &[Card]) -> DrawInfo {
         if count == 4 {
             let mut consec = 0;
             let mut max_consec = 0;
-            for i in start..end {
-                if ranks[i] > 0 {
+            for &r in &ranks[start..start + 5] {
+                if r > 0 {
                     consec += 1;
                     max_consec = max_consec.max(consec);
                 } else {

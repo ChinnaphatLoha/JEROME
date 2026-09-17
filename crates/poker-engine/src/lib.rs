@@ -9,16 +9,9 @@ use poker_core::game::GameState;
 use poker_decision::config::DecisionConfig;
 use poker_decision::decision::{DecisionEngine, DecisionResult};
 
+#[derive(Default)]
 pub struct EngineConfig {
     pub decision_config: DecisionConfig,
-}
-
-impl Default for EngineConfig {
-    fn default() -> Self {
-        Self {
-            decision_config: DecisionConfig::default(),
-        }
-    }
 }
 
 pub struct PokerEngine {

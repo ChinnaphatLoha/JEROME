@@ -1,5 +1,5 @@
-use poker_core::card::{Card, Rank, Suit};
 use once_cell::sync::Lazy;
+use poker_core::card::{Card, Rank, Suit};
 
 pub const PRIMES: [u64; 13] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41];
 
@@ -31,13 +31,21 @@ pub static TABLES: Lazy<LookupTables> = Lazy::new(|| {
         let mut nf = Vec::new();
         let mut current = Vec::new();
 
-        fn backtrack(current: &mut Vec<u8>, start_rank: u8, count: usize, target: usize, nf: &mut Vec<(u64, u32)>) {
+        fn backtrack(
+            current: &mut Vec<u8>,
+            start_rank: u8,
+            count: usize,
+            target: usize,
+            nf: &mut Vec<(u64, u32)>,
+        ) {
             if count == target {
                 let mut counts = [0u8; 13];
                 for &r in current.iter() {
                     counts[r as usize] += 1;
                 }
-                if counts.iter().any(|&c| c > 4) { return; }
+                if counts.iter().any(|&c| c > 4) {
+                    return;
+                }
 
                 let mut prime_prod = 1u64;
                 let mut cards = Vec::new();
@@ -45,11 +53,14 @@ pub static TABLES: Lazy<LookupTables> = Lazy::new(|| {
                 for (r, &c) in counts.iter().enumerate() {
                     for _ in 0..c {
                         prime_prod *= PRIMES[r];
-                        cards.push(Card::new(Rank::from_index(r as u8).unwrap(), Suit::from_index(suit_idx).unwrap()));
+                        cards.push(Card::new(
+                            Rank::from_index(r as u8).unwrap(),
+                            Suit::from_index(suit_idx).unwrap(),
+                        ));
                         suit_idx = (suit_idx + 1) % 4;
                     }
                 }
-                
+
                 if let Ok(hr) = crate::hand::evaluator::evaluate_naive(&cards) {
                     nf.push((prime_prod, hr.value()));
                 }

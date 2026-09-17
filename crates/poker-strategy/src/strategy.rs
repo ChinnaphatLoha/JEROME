@@ -1,5 +1,5 @@
-use poker_core::{ActionType, GameState};
 use poker_analysis::board::texture::BoardTexture;
+use poker_core::{ActionType, GameState};
 
 /// Represents an adjustment to the base strategy.
 #[derive(Debug, Clone, PartialEq)]
@@ -13,16 +13,26 @@ pub struct StrategyAdjustment {
 
 /// Engine for generating strategy adjustments based on game state, equity, and board texture.
 pub trait StrategyEngine {
-    fn adjust(&self, state: &GameState, equity: f64, board: &BoardTexture) -> Vec<StrategyAdjustment>;
+    fn adjust(
+        &self,
+        state: &GameState,
+        equity: f64,
+        board: &BoardTexture,
+    ) -> Vec<StrategyAdjustment>;
 }
 
 /// A default implementation of the StrategyEngine using basic heuristics.
 pub struct DefaultStrategy;
 
 impl StrategyEngine for DefaultStrategy {
-    fn adjust(&self, state: &GameState, equity: f64, board: &BoardTexture) -> Vec<StrategyAdjustment> {
+    fn adjust(
+        &self,
+        state: &GameState,
+        equity: f64,
+        board: &BoardTexture,
+    ) -> Vec<StrategyAdjustment> {
         let mut adjustments = Vec::new();
-        
+
         let _hero = state.hero();
         let to_call = state.to_call();
 
@@ -47,7 +57,7 @@ impl StrategyEngine for DefaultStrategy {
             if equity > 0.5 {
                 // Protect vulnerable made hands
                 adjustments.push(StrategyAdjustment {
-                    action: ActionType::Bet(0), 
+                    action: ActionType::Bet(0),
                     weight_multiplier: 1.5,
                     reason: "Protection on wet board".to_string(),
                 });

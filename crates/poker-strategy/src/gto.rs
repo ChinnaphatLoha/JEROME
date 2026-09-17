@@ -1,5 +1,5 @@
 /// Calculates Minimum Defense Frequency (MDF).
-/// This is the percentage of our range we must defend to prevent 
+/// This is the percentage of our range we must defend to prevent
 /// the opponent from profitably bluffing any two cards.
 pub fn minimum_defense_frequency(bet_size: u64, pot: u64) -> f64 {
     let pot_f = pot as f64;

@@ -1,11 +1,10 @@
-use crate::equity::{EquityConfig, EquityResult};
+use crate::equity::EquityConfig;
 use poker_analysis::hand::evaluator::evaluate;
 use poker_analysis::range::range::Range;
 use poker_core::card::{Card, Deck};
 use poker_core::error::PokerError;
 use rand::rngs::SmallRng;
 use rand::{Rng, SeedableRng};
-use std::cmp::Ordering;
 
 /// Per-player equity result in a multi-way pot.
 #[derive(Debug, Clone, PartialEq)]
@@ -66,7 +65,8 @@ pub fn calculate_multiway_equity(
     }
 
     // Pre-filter valid combos per opponent.
-    let mut valid_combos_per_opp: Vec<Vec<&poker_analysis::range::combo::Combo>> = Vec::with_capacity(num_opponents);
+    let mut valid_combos_per_opp: Vec<Vec<&poker_analysis::range::combo::Combo>> =
+        Vec::with_capacity(num_opponents);
     let mut weights_per_opp: Vec<f64> = Vec::with_capacity(num_opponents);
 
     for opp_range in opponent_ranges {
@@ -261,7 +261,11 @@ mod tests {
         assert_eq!(result.equities.len(), 3);
 
         // AA should dominate in a 3-way pot against KK and QQ.
-        assert!(result.equities[0] > 0.60, "Hero equity: {}", result.equities[0]);
+        assert!(
+            result.equities[0] > 0.60,
+            "Hero equity: {}",
+            result.equities[0]
+        );
         // All equities should sum to approximately 1.0.
         let sum: f64 = result.equities.iter().sum();
         assert!(
@@ -288,8 +292,7 @@ mod tests {
             ..Default::default()
         };
 
-        let result =
-            calculate_multiway_equity(hero, &[opp_range], &board, &dead, &config).unwrap();
+        let result = calculate_multiway_equity(hero, &[opp_range], &board, &dead, &config).unwrap();
 
         assert_eq!(result.num_players, 2);
         // AA vs random should be ~85%.
@@ -335,12 +338,15 @@ mod tests {
         };
 
         let result =
-            calculate_multiway_equity(hero, &[opp1, opp2, opp3], &board, &dead, &config)
-                .unwrap();
+            calculate_multiway_equity(hero, &[opp1, opp2, opp3], &board, &dead, &config).unwrap();
 
         assert_eq!(result.num_players, 4);
         // AA should still be the favorite.
-        assert!(result.equities[0] > 0.50, "Hero equity: {}", result.equities[0]);
+        assert!(
+            result.equities[0] > 0.50,
+            "Hero equity: {}",
+            result.equities[0]
+        );
         let sum: f64 = result.equities.iter().sum();
         assert!(
             (sum - 1.0).abs() < 0.05,

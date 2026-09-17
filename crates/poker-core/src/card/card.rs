@@ -1,6 +1,7 @@
 use super::{Rank, Suit};
 use crate::error::PokerError;
 use std::fmt;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Card(u8);
@@ -44,7 +45,16 @@ impl Card {
         1u64 << self.0
     }
 
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: &str) -> Result<Self, PokerError> {
+        <Self as FromStr>::from_str(s)
+    }
+}
+
+impl FromStr for Card {
+    type Err = PokerError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         let chars: Vec<char> = s.chars().collect();
         if chars.len() != 2 {
             return Err(PokerError::InvalidCard { index: 255 });

@@ -26,7 +26,7 @@ impl PreflopRanges {
     /// Typically: 77+, ATs+, KTs+, QTs+, JTs, AJo+, KQo
     fn utg_rfi() -> Range {
         let mut builder = RangeBuilder::new();
-        
+
         // Pairs: 77+
         for r in 5..=12 {
             builder = builder.add_pair(Rank::from_index(r as u8).unwrap(), 1.0);
@@ -61,7 +61,7 @@ impl PreflopRanges {
     /// UTG + 55+, A8s+, K9s+, Q9s+, J9s+, T9s, ATo+, KJo+
     fn hj_rfi() -> Range {
         let mut builder = RangeBuilder::new();
-        
+
         // Pairs: 55+
         for r in 3..=12 {
             builder = builder.add_pair(Rank::from_index(r as u8).unwrap(), 1.0);
@@ -102,7 +102,7 @@ impl PreflopRanges {
     /// HJ + 22+, A2s+, K6s+, Q8s+, J8s+, T8s+, 98s, 87s, A9o+, KTo+, QJo
     fn co_rfi() -> Range {
         let mut builder = RangeBuilder::new();
-        
+
         // Pairs: 22+
         for r in 0..=12 {
             builder = builder.add_pair(Rank::from_index(r as u8).unwrap(), 1.0);
@@ -150,7 +150,7 @@ impl PreflopRanges {
     /// Wide range exploiting positional advantage.
     fn btn_rfi() -> Range {
         let mut builder = RangeBuilder::new();
-        
+
         // Pairs: 22+
         for r in 0..=12 {
             builder = builder.add_pair(Rank::from_index(r as u8).unwrap(), 1.0);
@@ -210,7 +210,7 @@ impl PreflopRanges {
     /// Tighter than BTN due to being out of position postflop.
     fn sb_rfi() -> Range {
         let mut builder = RangeBuilder::new();
-        
+
         // Pairs: 22+
         for r in 0..=12 {
             builder = builder.add_pair(Rank::from_index(r as u8).unwrap(), 1.0);

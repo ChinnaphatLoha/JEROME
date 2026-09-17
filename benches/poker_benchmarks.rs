@@ -1,9 +1,9 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use poker_core::card::{Card, Rank, Suit};
 use poker_core::game::GameStateBuilder;
+use poker_core::game::{Player, PlayerStatus};
 use poker_core::Position;
 use poker_engine::{EngineConfig, PokerEngine};
-use poker_core::game::{Player, PlayerStatus};
 
 fn create_valid_player(id: u8, position: Position) -> Player {
     Player {

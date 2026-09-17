@@ -44,8 +44,8 @@ pub fn analyze_board(board: &[Card]) -> BoardTexture {
     if ranks[12] > 0 {
         wheel_count += 1;
     }
-    for i in 0..4 {
-        if ranks[i] > 0 {
+    for &r in &ranks[..4] {
+        if r > 0 {
             wheel_count += 1;
         }
     }
@@ -53,9 +53,8 @@ pub fn analyze_board(board: &[Card]) -> BoardTexture {
 
     for start in 0..=8 {
         let mut count = 0;
-        let end = start + 5;
-        for i in start..end {
-            if ranks[i] > 0 {
+        for &r in &ranks[start..start + 5] {
+            if r > 0 {
                 count += 1;
             }
         }

@@ -1,3 +1,4 @@
+#[allow(clippy::module_inception)]
 pub mod card;
 pub mod deck;
 pub mod rank;

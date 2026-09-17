@@ -19,7 +19,7 @@ use std::collections::HashMap;
 /// At each iteration the current strategy is proportional to positive
 /// regrets (regret matching). The *average* strategy across all
 /// iterations converges to a Nash equilibrium.
-
+///
 /// Available actions at a CFR decision node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CfrAction {
@@ -42,13 +42,9 @@ pub enum CfrNode {
         children: HashMap<CfrAction, Box<CfrNode>>,
     },
     /// A terminal node with a known payoff for Player 0 (Hero).
-    Terminal {
-        payoff: f64,
-    },
+    Terminal { payoff: f64 },
     /// A chance node that branches uniformly over its children.
-    Chance {
-        children: Vec<Box<CfrNode>>,
-    },
+    Chance { children: Vec<Box<CfrNode>> },
 }
 
 // ... InfoSetData remains same ...
@@ -87,7 +83,7 @@ impl InfoSetData {
             normalizing_sum += positive_regret;
         }
 
-        for (_, prob) in strategy.iter_mut() {
+        for prob in strategy.values_mut() {
             if normalizing_sum > 0.0 {
                 *prob /= normalizing_sum;
             } else {
@@ -194,8 +190,16 @@ impl CfrSolver {
                 children,
             } => {
                 let current_player = *player;
-                let reach_prob = if current_player == 0 { p0_reach } else { p1_reach };
-                let opp_reach_prob = if current_player == 0 { p1_reach } else { p0_reach };
+                let reach_prob = if current_player == 0 {
+                    p0_reach
+                } else {
+                    p1_reach
+                };
+                let opp_reach_prob = if current_player == 0 {
+                    p1_reach
+                } else {
+                    p0_reach
+                };
 
                 let actions: Vec<CfrAction> = children.keys().cloned().collect();
                 if !self.info_sets.contains_key(info_set) {
@@ -213,10 +217,7 @@ impl CfrSolver {
                 {
                     let data = self.info_sets.get_mut(info_set).unwrap();
                     for (&action, &prob) in &strategy {
-                        *data
-                            .cumulative_strategy
-                            .entry(action)
-                            .or_insert(0.0) += reach_prob * prob;
+                        *data.cumulative_strategy.entry(action).or_insert(0.0) += reach_prob * prob;
                     }
                 }
 
@@ -225,17 +226,21 @@ impl CfrSolver {
 
                 for (&action, child) in children {
                     let action_prob = strategy.get(&action).copied().unwrap_or(0.0);
-                    
-                    let next_p0_reach = if current_player == 0 { p0_reach * action_prob } else { p0_reach };
-                    let next_p1_reach = if current_player == 1 { p1_reach * action_prob } else { p1_reach };
+
+                    let next_p0_reach = if current_player == 0 {
+                        p0_reach * action_prob
+                    } else {
+                        p0_reach
+                    };
+                    let next_p1_reach = if current_player == 1 {
+                        p1_reach * action_prob
+                    } else {
+                        p1_reach
+                    };
 
                     // Utility of the child for the *current* player.
-                    let child_util = self.cfr_traverse(
-                        child,
-                        next_p0_reach,
-                        next_p1_reach,
-                        current_player,
-                    );
+                    let child_util =
+                        self.cfr_traverse(child, next_p0_reach, next_p1_reach, current_player);
                     action_utilities.insert(action, child_util);
                     node_utility += action_prob * child_util;
                 }
@@ -245,10 +250,8 @@ impl CfrSolver {
                     let data = self.info_sets.get_mut(info_set).unwrap();
                     for (&action, &util) in &action_utilities {
                         let regret = util - node_utility;
-                        *data
-                            .cumulative_regret
-                            .entry(action)
-                            .or_insert(0.0) += opp_reach_prob * regret;
+                        *data.cumulative_regret.entry(action).or_insert(0.0) +=
+                            opp_reach_prob * regret;
                     }
                 }
 
@@ -339,10 +342,7 @@ pub fn build_kuhn_tree(hero_card_rank: u8, opp_card_rank: u8) -> CfrNode {
 
     // Player 1 bets
     let mut p2_facing_bet = HashMap::new();
-    p2_facing_bet.insert(
-        CfrAction::Fold,
-        Box::new(CfrNode::Terminal { payoff: 1.0 }),
-    );
+    p2_facing_bet.insert(CfrAction::Fold, Box::new(CfrNode::Terminal { payoff: 1.0 }));
     p2_facing_bet.insert(
         CfrAction::Call,
         Box::new(CfrNode::Terminal {
@@ -384,14 +384,7 @@ mod tests {
         // (3 cards: 1, 2, 3 — each player gets one).
         let mut solver = CfrSolver::new();
 
-        let deals = vec![
-            (1u8, 2u8),
-            (1, 3),
-            (2, 1),
-            (2, 3),
-            (3, 1),
-            (3, 2),
-        ];
+        let deals = vec![(1u8, 2u8), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2)];
 
         for _ in 0..10_000 {
             for &(hero_card, opp_card) in &deals {

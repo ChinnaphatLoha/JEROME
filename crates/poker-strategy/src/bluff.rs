@@ -8,13 +8,12 @@ pub fn should_bluff(fold_equity: f64, equity: f64, pot: u64, bet_size: u64) -> b
 pub fn bluff_ev(fold_equity: f64, equity: f64, pot: u64, bet_size: u64) -> f64 {
     let win_amount = pot as f64;
     let lose_amount = bet_size as f64;
-    
+
     // EV = (Fold% * WinAmount) + ((1-Fold%) * ((Equity * (WinAmount + LoseAmount)) - ((1-Equity) * LoseAmount)))
     let fold_ev = fold_equity * win_amount;
-    let call_ev = (1.0 - fold_equity) * (
-        (equity * (win_amount + lose_amount)) - ((1.0 - equity) * lose_amount)
-    );
-    
+    let call_ev = (1.0 - fold_equity)
+        * ((equity * (win_amount + lose_amount)) - ((1.0 - equity) * lose_amount));
+
     fold_ev + call_ev
 }
 

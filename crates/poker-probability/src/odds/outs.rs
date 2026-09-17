@@ -5,7 +5,7 @@ pub struct OutsCalculator;
 impl OutsCalculator {
     pub fn count_outs(draw_info: &DrawInfo) -> u8 {
         let mut outs = 0;
-        
+
         // Simple disjoint outs approximation
         if draw_info.is_flush_draw && draw_info.is_oesd {
             outs = 15;
@@ -18,14 +18,14 @@ impl OutsCalculator {
         } else if draw_info.is_gutshot {
             outs = 4;
         }
-        
+
         // Overcards usually give 3 outs each (discounting slightly due to not being pure nut outs)
         // Here we just add 3 per overcard
         outs += draw_info.overcards * 3;
-        
+
         // Cap outs at 21 to avoid crazy estimates
-        if outs > 21 { 
-            21 
+        if outs > 21 {
+            21
         } else {
             outs
         }
@@ -45,7 +45,7 @@ impl OutsCalculator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_count_outs() {
         let mut info = DrawInfo {
@@ -56,7 +56,7 @@ mod tests {
             overcards: 0,
         };
         assert_eq!(OutsCalculator::count_outs(&info), 9);
-        
+
         info.is_oesd = true;
         assert_eq!(OutsCalculator::count_outs(&info), 15);
     }

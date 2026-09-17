@@ -15,7 +15,7 @@ impl Suit {
 
     pub fn from_index(index: u8) -> Option<Self> {
         if index < 4 {
-            Some(unsafe { std::mem::transmute(index) })
+            Some(unsafe { std::mem::transmute::<u8, Suit>(index) })
         } else {
             None
         }
