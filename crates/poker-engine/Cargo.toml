@@ -5,13 +5,17 @@ edition.workspace = true
 version.workspace = true
 license.workspace = true
 
+[features]
+default = ["simulation"]
+simulation = ["dep:poker-simulation"]
+
 [dependencies]
 poker-core = { path = "../poker-core" }
 poker-analysis = { path = "../poker-analysis" }
 poker-probability = { path = "../poker-probability" }
 poker-decision = { path = "../poker-decision" }
 poker-strategy = { path = "../poker-strategy" }
-poker-simulation = { path = "../poker-simulation" }
+poker-simulation = { path = "../poker-simulation", optional = true }
 
 [dev-dependencies]
 criterion.workspace = true
