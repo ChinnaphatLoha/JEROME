@@ -1,0 +1,22 @@
+[package]
+name = "poker-wasm"
+description = "WebAssembly adapter for the JEROME poker decision engine"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+poker-core = { path = "../poker-core" }
+poker-engine = { path = "../poker-engine", default-features = false }
+poker-decision = { path = "../poker-decision" }
+poker-probability = { path = "../poker-probability" }
+serde = { workspace = true }
+wasm-bindgen = { workspace = true }
+serde-wasm-bindgen = { workspace = true }
+getrandom = { version = "0.2", features = ["js"] }
+
+[dev-dependencies]
+wasm-bindgen-test = { workspace = true }
