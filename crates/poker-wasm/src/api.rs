@@ -161,4 +161,3 @@ export interface AnalysisError extends Error {
   code: AnalysisErrorCode;
 }
 "#;
-
