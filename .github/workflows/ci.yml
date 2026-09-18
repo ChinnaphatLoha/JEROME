@@ -56,11 +56,22 @@ jobs:
       - run: cargo bench --workspace --no-run
 
   wasm:
-    name: WASM
+    name: WASM Build & Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - run: cargo check -p poker-wasm --target wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build WASM package
+        run: wasm-pack build crates/poker-wasm --target web --out-dir pkg
+      - name: Verify package structure
+        run: |
+          test -f crates/poker-wasm/pkg/package.json
+          test -f crates/poker-wasm/pkg/jerome_poker_wasm.d.ts
+          test -f crates/poker-wasm/pkg/jerome_poker_wasm_bg.wasm
+          echo "Package structure verified ✓"
+      - name: Run WASM unit tests
+        run: cargo test -p jerome-poker-wasm

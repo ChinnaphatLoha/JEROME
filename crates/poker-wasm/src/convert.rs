@@ -444,4 +444,352 @@ mod tests {
             native_result.estimated_ev
         );
     }
+
+    // ─── Additional street coverage ─────────────────────────────────
+
+    #[test]
+    fn test_to_game_state_turn() {
+        let mut input = sample_input();
+        input.street = "turn".to_string();
+        input.board = vec![
+            "Qs".to_string(),
+            "Th".to_string(),
+            "5d".to_string(),
+            "2c".to_string(),
+        ];
+        input.pot = 200;
+        input.current_bet = 60;
+        let result = to_game_state(&input);
+        assert!(result.is_ok());
+        let state = result.unwrap();
+        assert_eq!(state.board.len(), 4);
+    }
+
+    #[test]
+    fn test_to_game_state_river() {
+        let mut input = sample_input();
+        input.street = "river".to_string();
+        input.board = vec![
+            "Qs".to_string(),
+            "Th".to_string(),
+            "5d".to_string(),
+            "2c".to_string(),
+            "9h".to_string(),
+        ];
+        input.pot = 400;
+        input.current_bet = 0;
+        let result = to_game_state(&input);
+        assert!(result.is_ok());
+        let state = result.unwrap();
+        assert_eq!(state.board.len(), 5);
+    }
+
+    // ─── Player status variants ─────────────────────────────────────
+
+    #[test]
+    fn test_allin_status_variants() {
+        for status_str in &["allin", "all_in", "all-in"] {
+            let mut input = sample_input();
+            input.players[1].status = status_str.to_string();
+            input.players[1].stack = 0;
+            let result = to_game_state(&input);
+            assert!(result.is_ok(), "Status '{}' should be accepted", status_str);
+        }
+    }
+
+    #[test]
+    fn test_folded_player() {
+        let mut input = sample_input();
+        input.players[1].status = "folded".to_string();
+        let result = to_game_state(&input);
+        assert!(result.is_ok());
+    }
+
+    // ─── Multi-player scenarios ─────────────────────────────────────
+
+    #[test]
+    fn test_three_player_game() {
+        let mut input = sample_input();
+        input.players.push(JsPlayer {
+            id: 2,
+            position: "SB".to_string(),
+            stack: 500,
+            status: "active".to_string(),
+            bet_this_round: 0,
+        });
+        let result = to_game_state(&input);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().players.len(), 3);
+    }
+
+    // ─── Edge case validation ───────────────────────────────────────
+
+    #[test]
+    fn test_hero_index_out_of_range() {
+        let mut input = sample_input();
+        input.hero_index = 99;
+        let result = to_game_state(&input);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_board_card_overlaps_hero_card() {
+        let mut input = sample_input();
+        input.street = "flop".to_string();
+        // Hero has As, board also has As — duplicate
+        input.board = vec!["As".to_string(), "Th".to_string(), "5d".to_string()];
+        let result = to_game_state(&input);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_wrong_board_count_turn() {
+        let mut input = sample_input();
+        input.street = "turn".to_string();
+        input.board = vec!["Qs".to_string(), "Th".to_string(), "5d".to_string()]; // Only 3 for turn
+        let result = to_game_state(&input);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_wrong_board_count_river() {
+        let mut input = sample_input();
+        input.street = "river".to_string();
+        input.board = vec![
+            "Qs".to_string(),
+            "Th".to_string(),
+            "5d".to_string(),
+            "2c".to_string(),
+        ]; // Only 4 for river
+        let result = to_game_state(&input);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_empty_card_string() {
+        let result = parse_card("");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_three_char_card_string() {
+        let result = parse_card("Asd");
+        assert!(result.is_err());
+    }
+
+    // ─── Error specificity ──────────────────────────────────────────
+
+    #[test]
+    fn test_invalid_card_error_message() {
+        let err = parse_card("Zz").unwrap_err();
+        match err {
+            WasmError::InvalidCard(s) => assert_eq!(s, "Zz"),
+            _ => panic!("Expected InvalidCard error"),
+        }
+    }
+
+    #[test]
+    fn test_invalid_street_error_message() {
+        let err = parse_street("postflop").unwrap_err();
+        match err {
+            WasmError::InvalidEnum { field, value } => {
+                assert_eq!(field, "street");
+                assert_eq!(value, "postflop");
+            }
+            _ => panic!("Expected InvalidEnum error"),
+        }
+    }
+
+    #[test]
+    fn test_invalid_position_error_message() {
+        let err = parse_position("DEALER").unwrap_err();
+        match err {
+            WasmError::InvalidEnum { field, value } => {
+                assert_eq!(field, "position");
+                assert_eq!(value, "DEALER");
+            }
+            _ => panic!("Expected InvalidEnum error"),
+        }
+    }
+
+    // ─── Action conversion completeness ─────────────────────────────
+
+    #[test]
+    fn test_all_action_type_conversions() {
+        let check = from_action_type(&ActionType::Check);
+        assert_eq!(check.action_type, "Check");
+        assert!(check.amount.is_none());
+
+        let call = from_action_type(&ActionType::Call);
+        assert_eq!(call.action_type, "Call");
+        assert!(call.amount.is_none());
+
+        let raise = from_action_type(&ActionType::Raise(100));
+        assert_eq!(raise.action_type, "Raise");
+        assert_eq!(raise.amount, Some(100));
+    }
+
+    // ─── Full pipeline across streets ───────────────────────────────
+
+    #[test]
+    fn test_full_pipeline_flop() {
+        let mut input = sample_input();
+        input.street = "flop".to_string();
+        input.board = vec!["Qs".to_string(), "Th".to_string(), "5d".to_string()];
+        input.pot = 120;
+        input.current_bet = 40;
+        let state = to_game_state(&input).unwrap();
+        let config = to_decision_config(input.config.as_ref());
+        let engine = poker_decision::decision::DecisionEngine::new(config);
+        let result = engine.analyze(&state).unwrap();
+        let js_result = from_decision_result(&result);
+
+        assert!(js_result.estimated_equity >= 0.0 && js_result.estimated_equity <= 1.0);
+        assert!(!js_result.alternatives.is_empty());
+        assert!(!js_result.explanation.recommended_action_label.is_empty());
+    }
+
+    #[test]
+    fn test_full_pipeline_turn() {
+        let mut input = sample_input();
+        input.street = "turn".to_string();
+        input.board = vec![
+            "Qs".to_string(),
+            "Th".to_string(),
+            "5d".to_string(),
+            "2c".to_string(),
+        ];
+        input.pot = 200;
+        input.current_bet = 60;
+        let state = to_game_state(&input).unwrap();
+        let config = to_decision_config(input.config.as_ref());
+        let engine = poker_decision::decision::DecisionEngine::new(config);
+        let result = engine.analyze(&state).unwrap();
+        let js_result = from_decision_result(&result);
+
+        assert!(js_result.estimated_equity >= 0.0 && js_result.estimated_equity <= 1.0);
+    }
+
+    #[test]
+    fn test_full_pipeline_river() {
+        let mut input = sample_input();
+        input.street = "river".to_string();
+        input.board = vec![
+            "Qs".to_string(),
+            "Th".to_string(),
+            "5d".to_string(),
+            "2c".to_string(),
+            "9h".to_string(),
+        ];
+        input.pot = 400;
+        input.current_bet = 0;
+        let state = to_game_state(&input).unwrap();
+        let config = to_decision_config(input.config.as_ref());
+        let engine = poker_decision::decision::DecisionEngine::new(config);
+        let result = engine.analyze(&state).unwrap();
+        let js_result = from_decision_result(&result);
+
+        assert!(js_result.estimated_equity >= 0.0 && js_result.estimated_equity <= 1.0);
+    }
+
+    // ─── Determinism with custom seed ───────────────────────────────
+
+    #[test]
+    fn test_deterministic_with_custom_seed() {
+        let mut input = sample_input();
+        input.config = Some(JsConfig {
+            mc_samples: Some(5000),
+            seed: Some(99),
+        });
+        let state = to_game_state(&input).unwrap();
+
+        let config1 = to_decision_config(input.config.as_ref());
+        let config2 = to_decision_config(input.config.as_ref());
+
+        let engine1 = poker_decision::decision::DecisionEngine::new(config1);
+        let engine2 = poker_decision::decision::DecisionEngine::new(config2);
+
+        let r1 = engine1.analyze(&state).unwrap();
+        let r2 = engine2.analyze(&state).unwrap();
+
+        assert_eq!(r1.estimated_equity, r2.estimated_equity);
+        assert_eq!(r1.estimated_ev, r2.estimated_ev);
+        assert_eq!(
+            format!("{:?}", r1.recommended_action),
+            format!("{:?}", r2.recommended_action)
+        );
+    }
+
+    // ─── Output structure validation ────────────────────────────────
+
+    #[test]
+    fn test_output_structure_completeness() {
+        let input = sample_input();
+        let state = to_game_state(&input).unwrap();
+        let config = to_decision_config(input.config.as_ref());
+        let engine = poker_decision::decision::DecisionEngine::new(config);
+        let result = engine.analyze(&state).unwrap();
+        let js_result = from_decision_result(&result);
+
+        // Verify all top-level fields are populated
+        assert!(!js_result.recommended_action.action_type.is_empty());
+        assert!(js_result.estimated_equity >= 0.0);
+        assert!(js_result.estimated_equity <= 1.0);
+        assert!(js_result.required_equity >= 0.0);
+        // EV can be negative
+        assert!(!js_result.alternatives.is_empty());
+
+        // Verify alternatives have proper structure
+        for alt in &js_result.alternatives {
+            assert!(!alt.action.action_type.is_empty());
+            assert!(!alt.label.is_empty());
+        }
+
+        // Verify explanation has proper structure
+        assert!(!js_result.explanation.recommended_action_label.is_empty());
+    }
+
+    // ─── Case insensitivity ─────────────────────────────────────────
+
+    #[test]
+    fn test_street_case_insensitive() {
+        assert!(parse_street("PREFLOP").is_ok());
+        assert!(parse_street("Flop").is_ok());
+        assert!(parse_street("TURN").is_ok());
+        assert!(parse_street("River").is_ok());
+    }
+
+    #[test]
+    fn test_position_case_insensitive() {
+        assert!(parse_position("utg").is_ok());
+        assert!(parse_position("btn").is_ok());
+        assert!(parse_position("Sb").is_ok());
+        assert!(parse_position("bb").is_ok());
+    }
+
+    #[test]
+    fn test_status_case_insensitive() {
+        assert!(parse_player_status("Active").is_ok());
+        assert!(parse_player_status("FOLDED").is_ok());
+        assert!(parse_player_status("ALLIN").is_ok());
+    }
+
+    // ─── Min raise defaults ─────────────────────────────────────────
+
+    #[test]
+    fn test_min_raise_defaults_to_big_blind() {
+        let mut input = sample_input();
+        input.min_raise = None;
+        input.big_blind = 10;
+        let state = to_game_state(&input).unwrap();
+        assert_eq!(state.min_raise, 10);
+    }
+
+    #[test]
+    fn test_min_raise_custom_value() {
+        let mut input = sample_input();
+        input.min_raise = Some(50);
+        let state = to_game_state(&input).unwrap();
+        assert_eq!(state.min_raise, 50);
+    }
 }

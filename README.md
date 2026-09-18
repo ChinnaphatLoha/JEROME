@@ -125,6 +125,7 @@ graph TD
 | **`poker-strategy`** | Strategy layer — value betting, bluff frequency, exploitative adjustments, GTO approximations | `value`, `bluff`, `exploitative`, `gto`, `strategy`, `cfr` |
 | **`poker-simulation`** | Scenario simulation and batch benchmarking harness | `scenario`, `simulator`, `benchmark` |
 | **`poker-engine`** | Unified facade re-exporting all crates: `PokerEngine::analyze(&GameState) → DecisionResult` | top-level API |
+| **`poker-wasm`** | WebAssembly adapter — `analyze()` boundary for browser and Node.js consumers | `api`, `convert`, `types`, `error` |
 
 ---
 
@@ -218,8 +219,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 JEROME can be compiled to WASM and used directly in the browser or Node.js without any network overhead:
 
+```bash
+# Build the WASM package
+wasm-pack build crates/poker-wasm --target web --out-dir pkg
+```
+
 ```javascript
-import init, { analyze } from "poker-wasm";
+import init, { analyze } from "jerome-poker-wasm";
 
 await init();
 
@@ -241,6 +247,8 @@ const result = analyze({
 console.log(result.recommended_action); // { type: "Call" }
 console.log(result.estimated_equity);   // 0.42
 ```
+
+> **Full WASM documentation** — input/output schemas, error handling, TypeScript types, browser/Node.js usage, and build instructions — is available in [`crates/poker-wasm/README.md`](crates/poker-wasm/README.md).
 
 ---
 

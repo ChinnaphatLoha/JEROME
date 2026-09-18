@@ -1,9 +1,13 @@
 [package]
-name = "poker-wasm"
-description = "WebAssembly adapter for the JEROME poker decision engine"
+name = "jerome-poker-wasm"
+description = "WebAssembly adapter for the JEROME poker decision engine — deterministic No-Limit Texas Hold'em analysis in the browser and Node.js"
 edition.workspace = true
 version.workspace = true
 license.workspace = true
+repository = "https://github.com/ChinnaphatLoha/JEROME"
+homepage = "https://github.com/ChinnaphatLoha/JEROME"
+keywords = ["poker", "wasm", "webassembly", "decision-engine", "texas-holdem"]
+categories = ["wasm", "game-engines"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -16,7 +20,9 @@ poker-probability = { path = "../poker-probability" }
 serde = { workspace = true }
 wasm-bindgen = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
+js-sys = { workspace = true }
 getrandom = { version = "0.2", features = ["js"] }
 
 [dev-dependencies]
 wasm-bindgen-test = { workspace = true }
+serde_json = "1"
